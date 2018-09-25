@@ -13,6 +13,7 @@ WORKDIR /go/src/github.com/caicloud/ciao
 RUN go build github.com/caicloud/ciao/cmd/kubeflow-kernel \
 	&& mv kubeflow-kernel /usr/bin/kubeflow-kernel
 
+# The images are copied from https://github.com/genuinetools/img/blob/master/Dockerfile.
 FROM golang:1.10-alpine AS gobuild-base
 
 RUN apk add --no-cache \
