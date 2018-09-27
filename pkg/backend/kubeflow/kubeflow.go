@@ -18,10 +18,9 @@ import (
 )
 
 const (
-	namespaceDefault = "default"
-	userAgent        = "kubeflow-kernel"
-	queryInterval    = 6 * time.Second
-	retryTime        = 10
+	UserAgent     = "kubeflow-kernel"
+	queryInterval = 6 * time.Second
+	retryTime     = 10
 )
 
 // Backend is the type for kubeflow backend.
@@ -33,15 +32,15 @@ type Backend struct {
 
 // New returns a new Backend.
 func New(config *restclientset.Config) (*Backend, error) {
-	tfJobClient, err := tfjobclient.NewForConfig(restclientset.AddUserAgent(config, userAgent))
+	tfJobClient, err := tfjobclient.NewForConfig(restclientset.AddUserAgent(config, UserAgent))
 	if err != nil {
 		return nil, err
 	}
-	k8sClient, err := kubeclient.NewForConfig(restclientset.AddUserAgent(config, userAgent))
+	k8sClient, err := kubeclient.NewForConfig(restclientset.AddUserAgent(config, UserAgent))
 	if err != nil {
 		return nil, err
 	}
-	pytorchClient, err := pyttorchjobclient.NewForConfig(restclientset.AddUserAgent(config, userAgent))
+	pytorchClient, err := pyttorchjobclient.NewForConfig(restclientset.AddUserAgent(config, UserAgent))
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +74,7 @@ func (b *Backend) GetLogs(job *types.Job) {
 
 	retry := 0
 	for {
-		pods, err = b.K8sClient.CoreV1().Pods(namespaceDefault).List(metav1.ListOptions{
+		pods, err = b.K8sClient.CoreV1().Pods(metav1.NamespaceDefault).List(metav1.ListOptions{
 			LabelSelector: GetLabelSelectorForJob(job),
 		})
 		if err != nil {
@@ -123,7 +122,7 @@ func (b Backend) getLogForPod(job *types.Job, pod v1.Pod, wg sync.WaitGroup) {
 		if PodRef.Status.Phase == v1.PodPending {
 			fmt.Printf("[kubeflow][%s] Pod is pending...\n", instanceName)
 			time.Sleep(queryInterval)
-			PodRef, err = b.K8sClient.CoreV1().Pods(namespaceDefault).Get(pod.Name, metav1.GetOptions{})
+			PodRef, err = b.K8sClient.CoreV1().Pods(metav1.NamespaceDefault).Get(pod.Name, metav1.GetOptions{})
 			if err != nil {
 				fmt.Printf("[kubeflow][%s] Failed to get the pod\n", instanceName)
 				return
@@ -135,7 +134,7 @@ func (b Backend) getLogForPod(job *types.Job, pod v1.Pod, wg sync.WaitGroup) {
 
 	retry := 0
 	for {
-		readCloser, err = b.K8sClient.CoreV1().Pods(namespaceDefault).GetLogs(PodRef.Name, logOpts).Stream()
+		readCloser, err = b.K8sClient.CoreV1().Pods(metav1.NamespaceDefault).GetLogs(PodRef.Name, logOpts).Stream()
 		if err != nil {
 			fmt.Printf("[kubeflow][%s] Failed to get the log of pod: %v\n", instanceName, err)
 			time.Sleep(queryInterval)

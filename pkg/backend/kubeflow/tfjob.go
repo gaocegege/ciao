@@ -9,12 +9,12 @@ import (
 )
 
 const (
-	defaultContainerNameTF = "tensorflow"
+	DefaultContainerNameTF = "tensorflow"
 )
 
 func (b Backend) createTFJob(parameter *types.Parameter) (*types.Job, error) {
-	tfJob := generateTFJob(parameter)
-	tfJob, err := b.TFJobClient.KubeflowV1alpha2().TFJobs(namespaceDefault).Create(tfJob)
+	tfJob := b.generateTFJob(parameter)
+	tfJob, err := b.TFJobClient.KubeflowV1alpha2().TFJobs(metav1.NamespaceDefault).Create(tfJob)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (b Backend) createTFJob(parameter *types.Parameter) (*types.Job, error) {
 	}, nil
 }
 
-func generateTFJob(parameter *types.Parameter) *tfv1alpha2.TFJob {
+func (b Backend) generateTFJob(parameter *types.Parameter) *tfv1alpha2.TFJob {
 	psCount := int32(parameter.PSCount)
 	workerCount := int32(parameter.WorkerCount)
 
@@ -46,7 +46,7 @@ func generateTFJob(parameter *types.Parameter) *tfv1alpha2.TFJob {
 						Spec: v1.PodSpec{
 							Containers: []v1.Container{
 								v1.Container{
-									Name:  defaultContainerNameTF,
+									Name:  DefaultContainerNameTF,
 									Image: parameter.Image,
 								},
 							},
@@ -59,7 +59,7 @@ func generateTFJob(parameter *types.Parameter) *tfv1alpha2.TFJob {
 						Spec: v1.PodSpec{
 							Containers: []v1.Container{
 								v1.Container{
-									Name:  defaultContainerNameTF,
+									Name:  DefaultContainerNameTF,
 									Image: parameter.Image,
 								},
 							},

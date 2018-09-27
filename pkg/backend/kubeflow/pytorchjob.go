@@ -13,8 +13,8 @@ const (
 )
 
 func (b Backend) createPyTorchJob(parameter *types.Parameter) (*types.Job, error) {
-	pytorchJob := generatePyTorchJob(parameter)
-	pytorchJob, err := b.PyTorchJobClient.KubeflowV1alpha2().PyTorchJobs(namespaceDefault).Create(pytorchJob)
+	pytorchJob := b.generatePyTorchJob(parameter)
+	pytorchJob, err := b.PyTorchJobClient.KubeflowV1alpha2().PyTorchJobs(metav1.NamespaceDefault).Create(pytorchJob)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (b Backend) createPyTorchJob(parameter *types.Parameter) (*types.Job, error
 	}, nil
 }
 
-func generatePyTorchJob(parameter *types.Parameter) *pytorchv1alpha2.PyTorchJob {
+func (b Backend) generatePyTorchJob(parameter *types.Parameter) *pytorchv1alpha2.PyTorchJob {
 	masterCount := int32(parameter.MasterCount)
 	workerCount := int32(parameter.WorkerCount)
 
