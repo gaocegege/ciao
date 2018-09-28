@@ -18,7 +18,10 @@ s2i:
   provider: img
   username: {input-your-username}
   password: {input-your-pwd}
+  registry: {input-your-registry}
 ```
+
+If you choose `img` or `s2i` to provide the functionality of converting source code to image, `username` and `password` are necessary to push the image to the Docker registry. `registry` is optional, default to `https://index.docker.io/v1/`.
 
 ### Build the Docker Image
 
