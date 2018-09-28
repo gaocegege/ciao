@@ -2,6 +2,8 @@
 
 ## Dockerized Kernel
 
+Dockerized kernel is designed to run the kernel remotely, if you are interested in the implementation, please see the [design document](./design.md).
+
 ### Requirements
 
 - Jupyter Notebook v4.4.0 or above (We do not test other versions now.)
