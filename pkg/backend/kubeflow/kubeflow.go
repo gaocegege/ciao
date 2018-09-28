@@ -14,6 +14,7 @@ import (
 	kubeclient "k8s.io/client-go/kubernetes"
 	restclientset "k8s.io/client-go/rest"
 
+	"github.com/caicloud/ciao/pkg/backend/kubeflow/generator"
 	"github.com/caicloud/ciao/pkg/types"
 )
 
@@ -28,6 +29,7 @@ type Backend struct {
 	TFJobClient      tfjobclient.Interface
 	PyTorchJobClient pyttorchjobclient.Interface
 	K8sClient        kubeclient.Interface
+	Generator        generator.Interface
 }
 
 // New returns a new Backend.
@@ -49,6 +51,29 @@ func New(config *restclientset.Config) (*Backend, error) {
 		TFJobClient:      tfJobClient,
 		K8sClient:        k8sClient,
 		PyTorchJobClient: pytorchClient,
+		Generator:        generator.NewNative(),
+	}, nil
+}
+
+func NewWithCM(config *restclientset.Config) (*Backend, error) {
+	tfJobClient, err := tfjobclient.NewForConfig(restclientset.AddUserAgent(config, UserAgent))
+	if err != nil {
+		return nil, err
+	}
+	k8sClient, err := kubeclient.NewForConfig(restclientset.AddUserAgent(config, UserAgent))
+	if err != nil {
+		return nil, err
+	}
+	pytorchClient, err := pyttorchjobclient.NewForConfig(restclientset.AddUserAgent(config, UserAgent))
+	if err != nil {
+		return nil, err
+	}
+
+	return &Backend{
+		TFJobClient:      tfJobClient,
+		K8sClient:        k8sClient,
+		PyTorchJobClient: pytorchClient,
+		Generator:        generator.NewCM(),
 	}, nil
 }
 

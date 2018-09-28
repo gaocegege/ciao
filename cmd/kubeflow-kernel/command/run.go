@@ -11,7 +11,6 @@ import (
 
 	"github.com/caicloud/ciao/pkg/backend"
 	kubeflowbackend "github.com/caicloud/ciao/pkg/backend/kubeflow"
-	kubeflowcmbackend "github.com/caicloud/ciao/pkg/backend/kubeflowcm"
 	"github.com/caicloud/ciao/pkg/config"
 	simpleinterpreter "github.com/caicloud/ciao/pkg/interpreter/simple"
 	"github.com/caicloud/ciao/pkg/kernel"
@@ -90,7 +89,7 @@ func createS2IClient(s2iConfig map[string]string, kubeconfig *restclientset.Conf
 func createBackend(s2iConfig map[string]string, kubeconfig *restclientset.Config) (backend.Interface, error) {
 	switch s2iConfig[config.S2IProvider] {
 	case config.S2IProviderCM:
-		return kubeflowcmbackend.New(kubeconfig)
+		return kubeflowbackend.NewWithCM(kubeconfig)
 	default:
 		return kubeflowbackend.New(kubeconfig)
 	}

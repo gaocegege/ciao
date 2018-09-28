@@ -2,8 +2,6 @@
   "argv": [
     "kubeflow-kernel",
     "run",
-    "--config",
-    "/home/ist/go/src/github.com/caicloud/ciao/hack/config.yaml",
     "--connection-file",
     "{connection_file}"
   ],
