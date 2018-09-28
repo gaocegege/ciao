@@ -38,9 +38,6 @@ func init() {
 
 func run(cmd *cobra.Command, args []string) {
 	kubeConfig := viper.GetString(config.KubeConfig)
-	if kubeConfig == "" {
-		log.Fatalln("Failed to start the kernel: Kubeconfig missed")
-	}
 
 	// Get kubernetes config.
 	kcfg, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
