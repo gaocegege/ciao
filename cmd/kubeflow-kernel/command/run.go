@@ -17,6 +17,7 @@ import (
 	"github.com/caicloud/ciao/pkg/kernel"
 	"github.com/caicloud/ciao/pkg/manager"
 	"github.com/caicloud/ciao/pkg/s2i"
+	configs2i "github.com/caicloud/ciao/pkg/s2i/configmap"
 	imgs2i "github.com/caicloud/ciao/pkg/s2i/img"
 	simples2i "github.com/caicloud/ciao/pkg/s2i/simple"
 	"github.com/caicloud/ciao/version"
@@ -58,7 +59,7 @@ func run(cmd *cobra.Command, args []string) {
 		log.Fatalf("Error building kubeflow backend: %s\n", err.Error())
 	}
 
-	s2iClient, err := createS2IClient(s2iConfig)
+	s2iClient, err := createS2IClient(s2iConfig, kcfg)
 	if err != nil {
 		log.Fatalf("Error creating s2i client: %s\n", err.Error())
 	}
@@ -73,12 +74,14 @@ func run(cmd *cobra.Command, args []string) {
 	ciao.RunKernel()
 }
 
-func createS2IClient(s2iConfig map[string]string) (s2i.Interface, error) {
+func createS2IClient(s2iConfig map[string]string, kubeconfig *restclientset.Config) (s2i.Interface, error) {
 	switch s2iConfig[config.S2IProvider] {
 	case config.S2IProviderS2I:
 		return simples2i.New(), nil
 	case config.S2IProviderImg:
 		return imgs2i.New(s2iConfig[config.S2IRegistry], s2iConfig[config.S2IUsername], s2iConfig[config.S2IPassword])
+	case config.S2IProviderCM:
+		return configs2i.New(kubeconfig)
 	default:
 		return nil, fmt.Errorf("Failed to find the provider %s", s2iConfig[config.S2IProvider])
 	}

@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	baseImageTF      = ""
+	baseImageTF      = "gaocegege/tensorflow-cm:v1"
 	baseImagePyTorch = ""
 )
 
@@ -46,6 +46,32 @@ func New(config *restclientset.Config) (*Backend, error) {
 			K8sClient:        k8sClient,
 			PyTorchJobClient: pytorchClient,
 		},
+	}, nil
+}
+
+// ExecCode executes the code according to the parameter.
+func (b *Backend) ExecCode(parameter *types.Parameter) (*types.Job, error) {
+	switch parameter.Framework {
+	case types.FrameworkTypeTensorFlow:
+		return b.createTFJob(parameter)
+	// case types.FrameworkTypePyTorch:
+	// 	return b.createPyTorchJob(parameter)
+	default:
+		return nil, fmt.Errorf("Failed to get the framework %s", parameter.Framework)
+	}
+}
+
+func (b Backend) createTFJob(parameter *types.Parameter) (*types.Job, error) {
+	tfJob := b.generateTFJob(parameter)
+	tfJob, err := b.TFJobClient.KubeflowV1alpha2().TFJobs(metav1.NamespaceDefault).Create(tfJob)
+	if err != nil {
+		return nil, err
+	}
+	return &types.Job{
+		Name:      tfJob.Name,
+		Framework: types.FrameworkTypeTensorFlow,
+		PS:        parameter.PSCount,
+		Worker:    parameter.WorkerCount,
 	}, nil
 }
 
