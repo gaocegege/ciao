@@ -59,7 +59,7 @@ RUN apk add --no-cache \
     musl-dev
 
 # install the kernel gateway
-RUN pip install jupyter_kernel_gateway
+RUN pip install --no-cache-dir jupyter_kernel_gateway
 
 COPY --from=img /usr/bin/img /usr/bin/img
 COPY --from=runc /usr/bin/runc /usr/bin/runc
